@@ -82,12 +82,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "search.wsgi.application"
 
+CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int, default=30)
+CONN_HEALTH_CHECKS = True
+DATABASE_URL = config("DATABASE_URL", default="")
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+if DATABASE_URL:
+    import dj_database_url
+
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_health_checks=CONN_HEALTH_CHECKS,
+            conn_max_age=CONN_MAX_AGE,
+        )
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

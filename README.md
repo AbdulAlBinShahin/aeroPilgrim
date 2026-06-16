@@ -73,6 +73,8 @@ Open `http://127.0.0.1:8000/`.
 | `FLIGHT_API_HOST` | `sky-scrapper.p.rapidapi.com` |
 | `OPENAI_API_KEY` | Optional, for AI recommendations |
 | `AI_MODEL` | Optional, defaults to `gpt-4o-mini` |
+| `DATABASE_URL` | Neon Postgres URL (omit to use local SQLite) |
+| `CONN_MAX_AGE` | DB connection pool age in seconds (default `30`) |
 
 ## Docker
 
@@ -102,6 +104,8 @@ ALLOWED_HOSTS=your-app.up.railway.app
 CSRF_TRUSTED_ORIGINS=https://your-app.up.railway.app
 FLIGHT_API_KEY=your-key
 FLIGHT_API_HOST=sky-scrapper.p.rapidapi.com
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DBNAME?sslmode=require
+CONN_MAX_AGE=30
 ```
 
 5. Deploy. Railway sets `PORT` automatically — Gunicorn binds to it via `start.sh`.
