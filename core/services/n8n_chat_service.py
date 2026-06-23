@@ -6,6 +6,12 @@ class N8nChatError(Exception):
     """Raised when the n8n chat webhook fails or returns an invalid payload."""
 
 
+ENGLISH_ONLY_INSTRUCTION = (
+    "Always respond in English only. Do not use Bengali, Hindi, Arabic, "
+    "or any language other than English."
+)
+
+
 def send_n8n_message(message, session_id, trip_context):
     if not settings.N8N_CHAT_WEBHOOK_URL:
         raise N8nChatError(
@@ -15,7 +21,16 @@ def send_n8n_message(message, session_id, trip_context):
     payload = {
         "action": "sendMessage",
         "sessionId": session_id,
-        "chatInput": message,
+        "chatInput": (
+            f"{ENGLISH_ONLY_INSTRUCTION}\n\n"
+            f"User question: {message}"
+        ),
+        "rawUserMessage": message,
+        "language": "en",
+        "locale": "en-US",
+        "respondInEnglish": True,
+        "systemMessage": ENGLISH_ONLY_INSTRUCTION,
+        "systemPrompt": ENGLISH_ONLY_INSTRUCTION,
         "search_id": trip_context.get("search_id"),
         "from_city": trip_context.get("city_departure_code"),
         "to_city": trip_context.get("city_arrival_code"),
@@ -23,7 +38,13 @@ def send_n8n_message(message, session_id, trip_context):
         "stay_days": trip_context.get("stay_days"),
         "timespan_to_search": trip_context.get("search_window_days"),
         "price_usd": trip_context.get("selected_price_usd"),
-        "metadata": trip_context,
+        "metadata": {
+            **trip_context,
+            "language": "en",
+            "locale": "en-US",
+            "respond_in_english": True,
+            "assistant_instruction": ENGLISH_ONLY_INSTRUCTION,
+        },
     }
 
     try:
